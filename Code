@@ -1,0 +1,57 @@
+from datetime import datetime, timedelta
+
+def calculate_years_and_days(birth_date, today):
+    """Calculate the total years and remaining days."""
+    years = today.year - birth_date.year
+    if (today.month, today.day) < (birth_date.month, birth_date.day):
+        years -= 1
+    next_birthday = birth_date.replace(year=today.year)
+    if (today.month, today.day) >= (birth_date.month, birth_date.day):
+        next_birthday = next_birthday.replace(year=today.year + 1)
+    days_until_next_birthday = (next_birthday - today).days
+    return years, days_until_next_birthday
+
+def calculate_detailed_age(birth_date):
+    """Calculate age in years, months, and days."""
+    today = datetime.today()
+    years = today.year - birth_date.year
+    months = today.month - birth_date.month
+    if today.day < birth_date.day:
+        months -= 1
+        days = (datetime(today.year, today.month, 1) - timedelta(days=birth_date.day)).days
+    else:
+        days = today.day - birth_date.day
+    if months < 0:
+        years -= 1
+        months += 12
+    return years, months, days
+
+def check_leap_year(birth_date):
+    """Determine if the birth year was a leap year."""
+    year = birth_date.year
+    return year % 4 == 0 and (year % 100 != 0 or year % 400 == 0)
+
+def main():
+    print("Welcome to the Unique Age Calculator!")
+    print("This tool provides detailed information about your age.")
+    
+    try:
+        user_input = input("Enter your date of birth (YYYY-MM-DD): ")
+        birth_date = datetime.strptime(user_input, "%Y-%m-%d")
+        if birth_date > datetime.today():
+            print("Error: The date of birth cannot be in the future. Please try again.")
+            return
+        years, months, days = calculate_detailed_age(birth_date)
+        print(f"You are {years} years, {months} months, and {days} days old.")
+        if check_leap_year(birth_date):
+            print(f"Interesting fact: {birth_date.year} was a leap year!")
+        else:
+            print(f"Interesting fact: {birth_date.year} was not a leap year.")
+        years, days_until_next_birthday = calculate_years_and_days(birth_date, datetime.today())
+        print(f"You will turn {years + 1} in {days_until_next_birthday} days.")
+    
+    except ValueError:
+        print("Invalid format! Make sure you use YYYY-MM-DD.")
+
+if __name__ == "__main__":
+    main()
